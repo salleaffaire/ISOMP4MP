@@ -1,0 +1,15 @@
+;; Media Header
+atom:"mdhd" full:true root:false
+ 0: if ("version" == 1) 1 ? 6
+ 1: pop 64 "creation_time"
+ 2: pop 64 "modification_time"
+ 3: pop 32 "time_scale"
+ 4: pop 64 "duration"
+ 5: jump 10
+ 6: pop 32 "creation_time"
+ 7: pop 32 "modification_time"
+ 8: pop 32 "time_scale"
+ 9: pop 32 "duration" 
+10: pop 16 "pad_language"
+11: pop 16 "predefined"
+12: end
