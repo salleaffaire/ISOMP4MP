@@ -5,6 +5,7 @@
 #include "bitextractor.hpp"
 
 #include "mp4parser.hpp"
+#include "mp_lexer.hpp"
 
 
 int main(int argc, char *argv[]) {
@@ -28,7 +29,7 @@ int main(int argc, char *argv[]) {
    in.close();
 
    // Test bit extractor
-   #if 1
+   #if 0
    bit_extractor be(filedata, filesize);
    unsigned int code0 = be.get_bits(8);
    unsigned int code1 = be.get_bits(4);
@@ -45,12 +46,22 @@ int main(int argc, char *argv[]) {
    std::cout << bit_code{code5, 6} << std::endl;  
    #endif
 
+   #if 1
+   // Test MP Lexer
+   mp_lexer lexer("tests/mp_test_lx_0.mpl");
+   lexer.run();
+
+   lexer.output_token_list();
+   #endif
+
+   #if 0
    // Create the ISO MP4 box tree 
    mp4tree mp4t;
    mp4t.parseboxtree(filedata, filesize);
 
    // Instanciate an MP4 parser  
    mp4parser mp4p;
+   #endif
 
    delete [] filedata;
 
