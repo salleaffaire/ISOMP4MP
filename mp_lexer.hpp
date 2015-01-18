@@ -10,6 +10,8 @@
 
 #define MAX_TOKEN_SIZE 256
 
+#define MIN(X,Y) ((X < Y) ? (X) : (Y))
+
 enum MP_LEXER_STATE {
    mp_l_ok     = 0x0000,
    mp_l_uninit = 0x0001,
@@ -128,6 +130,9 @@ public:
       mReservedWords["if"]    = mp_token_if;     
       mReservedWords["var"]   = mp_token_var;
       mReservedWords["proc"]  = mp_token_proc;
+
+      // Error message map
+      mErrorMessages[mp_l_error_syntax] = "Syntax";
    }
 
    bool mp_isalpha(const char c) {
@@ -149,7 +154,7 @@ public:
 
       // Token name is set to name - will be changed to reserved if part of the 
       // reserved words
-      token->mType = mp_token_literal;
+      token->mType = mp_token_name;
       
       // Store first caracter
       unsigned int current_char = 1;
@@ -231,7 +236,7 @@ public:
       return rval; 
    }
 
-   bool mp_readliteral(char **pc, mp_token *token) {
+   bool mp_readliteral(char **pc, mp_token *token, unsigned int charsleft) {
       bool rval = true;
       
       // Token name is set to name - will be changed to reserved if part of the 
@@ -241,8 +246,12 @@ public:
       // Skip first caracter " 
       unsigned int current_char = 0;
       ++(*pc);
-      
-      while (('"' != **pc) && (current_char < MAX_TOKEN_SIZE)) {
+
+      const unsigned int limit = MIN(MAX_TOKEN_SIZE, charsleft);
+      //std::cout << "Chars Left = " << charsleft << std::endl;
+      //std::cout << "Chars Limit = " << limit << std::endl;
+     
+      while (('"' != **pc) && (current_char < limit)) {
          // If escaped 
          if ('\\' == **pc) {
             ++(*pc);
@@ -269,9 +278,16 @@ public:
          current_char++;
          ++(*pc);
       }
-          
-      // Skip last caracter " 
-      ++(*pc);
+
+      if ('"' != **pc) {
+         mState = mp_l_error;
+         mError = mp_l_error_syntax;
+         rval = false;
+      }
+      else {
+         // Skip last caracter "
+         ++(*pc);
+      }
 
 
       return rval;       
@@ -286,7 +302,7 @@ public:
          bool need_new_token = true;
          mp_token *current_token;
 
-         while (pc != pe) {
+         while (pc < pe) {
             std::cout << *pc;
             if (need_new_token) {
                current_token = new mp_token;
@@ -324,9 +340,12 @@ public:
                }
             }
             else if (*pc == '"') {
-               if (mp_readliteral(&pc, current_token)) {
+               if (mp_readliteral(&pc, current_token, pe-pc)) {
                   mTokenList.push_back(std::shared_ptr<mp_token>(current_token));
                   need_new_token = true;
+               }
+               else {
+                  err();
                }
             }
             // It's something else
@@ -343,6 +362,8 @@ public:
    
    void output_token_list() {
       std::cout << std::endl;
+      std::cout << "TOKEN LIST" << std::endl;
+      std::cout << "-------------------------------------------" << std::endl;
       for (auto &a : mTokenList) {
          std::cout << mTokenTypeNames[a->mType] << " : " << a->mValue << std::endl; 
       }
@@ -357,11 +378,13 @@ private:
 
    std::list<std::shared_ptr<mp_token>> mTokenList;
    std::map<std::string, MP_TOKEN_TYPE> mReservedWords;
+   std::map<MP_LEXER_ERROR, std::string> mErrorMessages;
 
    // This is mostly used for debugging
    std::map<MP_TOKEN_TYPE, std::string> mTokenTypeNames;
 
    bool err() {
+      std::cout << std::endl;
       std::cout << "Error " << mError << std::endl;
    }
 };
