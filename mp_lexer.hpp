@@ -34,9 +34,13 @@ enum MP_TOKEN_TYPE {
    mp_token_break,
 
    mp_token_var,
+   mp_token_struct,
    mp_token_proc,
 
    mp_token_bit,
+   mp_token_list,
+   mp_token_sizeof,
+   mp_token_in,
 
    // Operators
    mp_token_slash,
@@ -135,9 +139,14 @@ public:
       mTokenTypeNames[mp_token_break]   = "Break";  
       mTokenTypeNames[mp_token_if]      = "If";  
       mTokenTypeNames[mp_token_var]     = "Var";  
-      mTokenTypeNames[mp_token_proc]    = "Proc";  
+      mTokenTypeNames[mp_token_proc]    = "Proc"; 
+      mTokenTypeNames[mp_token_struct]  = "Struct";       
+      mTokenTypeNames[mp_token_in]      = "In"; 
+      mTokenTypeNames[mp_token_sizeof]  = "Sizeof"; 
+
       // Built in types
-      mTokenTypeNames[mp_token_proc]    = "Bit"; 
+      mTokenTypeNames[mp_token_list]    = "List"; 
+      mTokenTypeNames[mp_token_bit]     = "Bit"; 
 
       mTokenTypeNames[mp_token_slash]   = "Slash";  
       mTokenTypeNames[mp_token_plus]    = "Plus";  
@@ -177,11 +186,16 @@ public:
       mTokenTypeNames[mp_token_literal]  = "String Literal";  
 
       // Reserved words map
-      mReservedWords["while"] = mp_token_while;
-      mReservedWords["break"] = mp_token_break;
-      mReservedWords["if"]    = mp_token_if;     
-      mReservedWords["var"]   = mp_token_var;
-      mReservedWords["proc"]  = mp_token_proc;
+      mReservedWords["while"]  = mp_token_while;
+      mReservedWords["break"]  = mp_token_break;
+      mReservedWords["if"]     = mp_token_if;     
+      mReservedWords["var"]    = mp_token_var;
+      mReservedWords["proc"]   = mp_token_proc;
+      mReservedWords["struct"] = mp_token_struct;
+      mReservedWords["in"]     = mp_token_in;
+      mReservedWords["sizeof"] = mp_token_sizeof;
+      mReservedWords["bit"]    = mp_token_bit;
+      mReservedWords["list"]   = mp_token_list;
 
       // Error message map
       mErrorMessages[mp_l_error_syntax] = "Syntax";
@@ -237,6 +251,12 @@ public:
          ++(*pc);
       }
       token->mValue[current_char] = 0x00;
+
+      // Try to find a reserved word
+      auto it = mReservedWords.find(token->mValue);
+      if (it != mReservedWords.end()) {
+         token->mType = it->second;
+      }
       
       return rval;
    }

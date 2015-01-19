@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
 
    #if 1
    // Test MP Lexer
-   mp_lexer lexer("tests/mp_test0.mpl");
+   mp_lexer lexer("tests/mp_test1.mpl");
    lexer.run();
 
    lexer.output_token_list();
