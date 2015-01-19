@@ -6,7 +6,7 @@ struct TEST_STRUCTURE_0 {
 }
 
 proc TEST_PROCEDURE_0 {
-   var integer counter = 10;
+   var bit[32] counter = 10;
    var TEST_STRUCTURE_0 ts;
    
    while (n <= 0) (

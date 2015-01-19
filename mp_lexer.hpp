@@ -25,8 +25,10 @@ enum MP_LEXER_ERROR {
 };
 
 enum MP_TOKEN_TYPE {
+   // General names
    mp_token_name, 
 
+   // Reserved words
    mp_token_while,
    mp_token_if,
    mp_token_break,
@@ -34,6 +36,9 @@ enum MP_TOKEN_TYPE {
    mp_token_var,
    mp_token_proc,
 
+   mp_token_bit,
+
+   // Operators
    mp_token_slash,
    mp_token_plus,
    mp_token_minus,
@@ -45,7 +50,30 @@ enum MP_TOKEN_TYPE {
    mp_token_leftbracket,
    mp_token_rightbracket,
    mp_token_semicolon,
+   mp_token_dot,
+   mp_token_equal,
+   mp_token_notequal,
+   mp_token_greater,
+   mp_token_lesser,
+   mp_token_greaterequal,
+   mp_token_lesserequal,
+   mp_token_rightarrow,
+   mp_token_not,
+   mp_token_or,
+   mp_token_and,
+   mp_token_xor,
+   mp_token_bwnot,
+   mp_token_bwor,
+   mp_token_bwand,
+   mp_token_bwxor,
+   mp_token_leftshift,
+   mp_token_rightshift,
+   mp_token_assignment,
+   
+   // Numerals
+   mp_token_numeral,
 
+   // String Literals
    mp_token_literal
 };
 
@@ -108,6 +136,8 @@ public:
       mTokenTypeNames[mp_token_if]      = "If";  
       mTokenTypeNames[mp_token_var]     = "Var";  
       mTokenTypeNames[mp_token_proc]    = "Proc";  
+      // Built in types
+      mTokenTypeNames[mp_token_proc]    = "Bit"; 
 
       mTokenTypeNames[mp_token_slash]   = "Slash";  
       mTokenTypeNames[mp_token_plus]    = "Plus";  
@@ -121,6 +151,28 @@ public:
       mTokenTypeNames[mp_token_leftbracket]   = "Left Bracket";  
       mTokenTypeNames[mp_token_rightbracket]  = "Right Bracket";  
       mTokenTypeNames[mp_token_semicolon]     = "Semicolon";  
+      mTokenTypeNames[mp_token_dot]           = "Dot";  
+      mTokenTypeNames[mp_token_equal]         = "Equal";  
+      mTokenTypeNames[mp_token_notequal]      = "Not Equal";  
+      mTokenTypeNames[mp_token_greater]       = "Greater";  
+      mTokenTypeNames[mp_token_lesser]        = "Lesser";  
+      mTokenTypeNames[mp_token_greaterequal]  = "Greater or Equal";  
+      mTokenTypeNames[mp_token_lesserequal]   = "Lesser or Equal";  
+
+      mTokenTypeNames[mp_token_rightarrow]    = "Right Arrow";  
+      mTokenTypeNames[mp_token_not]           = "Not";  
+      mTokenTypeNames[mp_token_or]            = "Or";  
+      mTokenTypeNames[mp_token_and]           = "And";  
+      mTokenTypeNames[mp_token_xor]           = "Xor";  
+      mTokenTypeNames[mp_token_bwnot]         = "Bitwise Not";  
+      mTokenTypeNames[mp_token_bwor]          = "Bitwise Or";  
+      mTokenTypeNames[mp_token_bwand]         = "Bitwise And";  
+      mTokenTypeNames[mp_token_bwxor]         = "Bitwise Xor";  
+      mTokenTypeNames[mp_token_leftshift]     = "Left Shift";  
+      mTokenTypeNames[mp_token_rightshift]    = "Right Shift";  
+      mTokenTypeNames[mp_token_assignment]    = "Assignment";  
+
+      mTokenTypeNames[mp_token_numeral]     = "Numeral";  
 
       mTokenTypeNames[mp_token_literal]  = "String Literal";  
 
@@ -149,6 +201,24 @@ public:
       return mp_isdecdigit(c) || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
    }
 
+   bool mp_readdecnumber(char **pc, mp_token *token) {
+      bool rval = true;
+
+      // Token name is set to name - will be changed to reserved if part of the 
+      // reserved words
+      token->mType = mp_token_numeral;
+
+      unsigned int current_char = 0;
+
+      while ((mp_isdecdigit(**pc) || ('.' == **pc)) && (current_char < MAX_TOKEN_SIZE)) {
+         token->mValue[current_char] = **pc;
+         ++current_char;
+         ++(*pc);
+      }
+
+      return rval;
+   }
+
    bool mp_readalpha(char **pc, mp_token *token) {
       bool rval = true;
 
@@ -163,7 +233,7 @@ public:
 
       while ((mp_isalpha(**pc) || mp_isdecdigit(**pc)) && (current_char < MAX_TOKEN_SIZE)) {
          token->mValue[current_char] = **pc;
-         current_char++;
+         ++current_char;
          ++(*pc);
       }
       token->mValue[current_char] = 0x00;
@@ -195,6 +265,10 @@ public:
       else if ('-' == **pc) {
          token->mType = mp_token_minus;
          ++(*pc);         
+         if ('>' == **pc) {
+            token->mType = mp_token_rightarrow;
+            ++(*pc);
+         }
       }
       else if ('+' == **pc) {
          token->mType = mp_token_plus;
@@ -231,6 +305,70 @@ public:
       else if (';' == **pc) {
          token->mType = mp_token_semicolon;
          ++(*pc);
+      }
+      else if ('.' == **pc) {
+         token->mType = mp_token_dot;
+         ++(*pc);
+      }
+      else if ('~' == **pc) {
+         token->mType = mp_token_bwnot;
+         ++(*pc);
+      }
+      else if ('=' == **pc) {
+         token->mType = mp_token_assignment;
+         ++(*pc);
+         if ('=' == **pc) {
+            token->mType = mp_token_equal;
+            ++(*pc);
+         }
+      }
+      else if ('!' == **pc) {
+         token->mType = mp_token_not;
+         ++(*pc);
+         if ('=' == **pc) {
+            token->mType = mp_token_notequal;
+            ++(*pc);
+         }
+      }
+      else if ('^' == **pc) {
+         token->mType = mp_token_bwxor;
+         ++(*pc);
+         if ('^' == **pc) {
+            token->mType = mp_token_xor;
+            ++(*pc);
+         }
+      }
+      else if ('&' == **pc) {
+         token->mType = mp_token_bwand;
+         ++(*pc);
+         if ('&' == **pc) {
+            token->mType = mp_token_and;
+            ++(*pc);
+         }
+      }
+      else if ('|' == **pc) {
+         token->mType = mp_token_bwor;
+         ++(*pc);
+         if ('|' == **pc) {
+            token->mType = mp_token_or;
+            ++(*pc);
+         }
+      }
+      else if ('>' == **pc) {
+         token->mType = mp_token_greater;
+         ++(*pc);
+         if ('=' == **pc) {
+            token->mType = mp_token_greaterequal;
+            ++(*pc);
+         }
+      }
+      else if ('<' == **pc) {
+         token->mType = mp_token_lesser;
+         ++(*pc);
+         if ('=' == **pc) {
+            token->mType = mp_token_lesserequal;
+            ++(*pc);
+         }
       }
 
       return rval; 
@@ -275,7 +413,7 @@ public:
             token->mValue[current_char] = **pc;
          }
          
-         current_char++;
+         ++current_char;
          ++(*pc);
       }
 
@@ -330,15 +468,19 @@ public:
                   }       
                }
             }
+            // If an operator
             else if ((*pc == '*') || (*pc == '+') || (*pc == '-') || 
                      (*pc == '(') || (*pc == ')') || (*pc == '{') || 
                      (*pc == '}') || (*pc == '[') || (*pc == ']') ||
-                     (*pc == ';')) {
+                     (*pc == ';') || (*pc == '.') || (*pc == '<') ||
+                     (*pc == '>') || (*pc == '=') || (*pc == '!') ||
+                     (*pc == '^') || (*pc == '&') || (*pc == '|')) {
                if (mp_readoperator(&pc, current_token)) {
                   mTokenList.push_back(std::shared_ptr<mp_token>(current_token));
                   need_new_token = true;
                }
             }
+            // If a string literal
             else if (*pc == '"') {
                if (mp_readliteral(&pc, current_token, pe-pc)) {
                   mTokenList.push_back(std::shared_ptr<mp_token>(current_token));
@@ -346,6 +488,21 @@ public:
                }
                else {
                   err();
+               }
+            }
+            // If a number
+            else if (mp_isdecdigit(*pc)) {
+               if (('0' == *pc) && (('x' == *(pc+1)) || ('X' == *(pc+1)))) {
+                  // TODO HEX
+               } 
+               else {
+                  if (mp_readdecnumber(&pc, current_token)) {
+                     mTokenList.push_back(std::shared_ptr<mp_token>(current_token));
+                     need_new_token = true;
+                  }
+                  else {
+                     err();
+                  }
                }
             }
             // It's something else
