@@ -133,26 +133,26 @@ public:
 
    bool init() {
       // Token names map
-      mTokenTypeNames[mp_token_name]    = "Name";
+      mTokenTypeNames[mp_token_name]          = "Name";
 
-      mTokenTypeNames[mp_token_while]   = "While";  
-      mTokenTypeNames[mp_token_break]   = "Break";  
-      mTokenTypeNames[mp_token_if]      = "If";  
-      mTokenTypeNames[mp_token_var]     = "Var";  
-      mTokenTypeNames[mp_token_proc]    = "Proc"; 
-      mTokenTypeNames[mp_token_struct]  = "Struct";       
-      mTokenTypeNames[mp_token_in]      = "In"; 
-      mTokenTypeNames[mp_token_sizeof]  = "Sizeof"; 
+      // Reserved words
+      mTokenTypeNames[mp_token_while]         = "While";  
+      mTokenTypeNames[mp_token_break]         = "Break";  
+      mTokenTypeNames[mp_token_if]            = "If";  
+      mTokenTypeNames[mp_token_var]           = "Var";  
+      mTokenTypeNames[mp_token_proc]          = "Proc"; 
+      mTokenTypeNames[mp_token_struct]        = "Struct";       
+      mTokenTypeNames[mp_token_in]            = "In"; 
+      mTokenTypeNames[mp_token_sizeof]        = "Sizeof"; 
 
-      // Built in types
-      mTokenTypeNames[mp_token_list]    = "List"; 
-      mTokenTypeNames[mp_token_bit]     = "Bit"; 
+      mTokenTypeNames[mp_token_list]          = "List";  
+      mTokenTypeNames[mp_token_bit]           = "Bit"; 
 
-      mTokenTypeNames[mp_token_slash]   = "Slash";  
-      mTokenTypeNames[mp_token_plus]    = "Plus";  
-      mTokenTypeNames[mp_token_minus]   = "Minus"; 
-      mTokenTypeNames[mp_token_star]    = "Star";  
-
+      // Operators
+      mTokenTypeNames[mp_token_slash]         = "Slash";  
+      mTokenTypeNames[mp_token_plus]          = "Plus";  
+      mTokenTypeNames[mp_token_minus]         = "Minus"; 
+      mTokenTypeNames[mp_token_star]          = "Star";  
       mTokenTypeNames[mp_token_leftpar]       = "Left Parenthese";  
       mTokenTypeNames[mp_token_rightpar]      = "Right Parenthese";  
       mTokenTypeNames[mp_token_leftbrace]     = "Left Brace";  
@@ -166,8 +166,7 @@ public:
       mTokenTypeNames[mp_token_greater]       = "Greater";  
       mTokenTypeNames[mp_token_lesser]        = "Lesser";  
       mTokenTypeNames[mp_token_greaterequal]  = "Greater or Equal";  
-      mTokenTypeNames[mp_token_lesserequal]   = "Lesser or Equal";  
-
+      mTokenTypeNames[mp_token_lesserequal]   = "Lesser or Equal";
       mTokenTypeNames[mp_token_rightarrow]    = "Right Arrow";  
       mTokenTypeNames[mp_token_not]           = "Not";  
       mTokenTypeNames[mp_token_or]            = "Or";  
@@ -179,11 +178,13 @@ public:
       mTokenTypeNames[mp_token_bwxor]         = "Bitwise Xor";  
       mTokenTypeNames[mp_token_leftshift]     = "Left Shift";  
       mTokenTypeNames[mp_token_rightshift]    = "Right Shift";  
-      mTokenTypeNames[mp_token_assignment]    = "Assignment";  
+      mTokenTypeNames[mp_token_assignment]    = "Assignment";
 
-      mTokenTypeNames[mp_token_numeral]     = "Numeral";  
+      // Constant - Numerals
+      mTokenTypeNames[mp_token_numeral]       = "Numeral";  
 
-      mTokenTypeNames[mp_token_literal]  = "String Literal";  
+      // String literals
+      mTokenTypeNames[mp_token_literal]       = "String Literal";  
 
       // Reserved words map
       mReservedWords["while"]  = mp_token_while;
@@ -278,117 +279,138 @@ public:
    bool mp_readoperator(char **pc, mp_token *token) {
       bool rval = true;      
       
-      if ('/' == **pc) {
+      switch (**pc) {
+      case '/':
          token->mType = mp_token_slash;
          ++(*pc);
-      } 
-      else if ('-' == **pc) {
+         break;
+ 
+      case '-':
          token->mType = mp_token_minus;
          ++(*pc);         
          if ('>' == **pc) {
             token->mType = mp_token_rightarrow;
             ++(*pc);
          }
-      }
-      else if ('+' == **pc) {
+         break;
+      
+      case '+':
          token->mType = mp_token_plus;
-         ++(*pc);         
-      }
-      else if ('*' == **pc) {
+         ++(*pc);
+         break;
+
+      case '*':
          token->mType = mp_token_star;
          ++(*pc);         
-      }
-      else if ('(' == **pc) {
+         break;
+
+      case '(':
          token->mType = mp_token_leftpar;
          ++(*pc);
-      }
-      else if (')' == **pc) {
+         break;
+
+      case ')':
          token->mType = mp_token_rightpar;
          ++(*pc);
-      }
-      else if ('{' == **pc) {
+         break;
+
+      case '{':
          token->mType = mp_token_leftbrace;
          ++(*pc);
-      }
-      else if ('}' == **pc) {
+         break;
+
+      case '}':
          token->mType = mp_token_rightbrace;
          ++(*pc);
-      }
-      else if ('[' == **pc) {
+         break;
+
+      case '[':
          token->mType = mp_token_leftbracket;
          ++(*pc);
-      }
-      else if (']' == **pc) {
+         break;
+
+      case ']':
          token->mType = mp_token_rightbracket;
          ++(*pc);
-      }
-      else if (';' == **pc) {
+         break;
+
+      case ';':
          token->mType = mp_token_semicolon;
          ++(*pc);
-      }
-      else if ('.' == **pc) {
+         break;
+
+      case '.':
          token->mType = mp_token_dot;
          ++(*pc);
-      }
-      else if ('~' == **pc) {
+         break;
+
+      case '~':
          token->mType = mp_token_bwnot;
          ++(*pc);
-      }
-      else if ('=' == **pc) {
+         break;
+
+      case '=':
          token->mType = mp_token_assignment;
          ++(*pc);
          if ('=' == **pc) {
             token->mType = mp_token_equal;
             ++(*pc);
          }
-      }
-      else if ('!' == **pc) {
+         break;
+
+      case '!':
          token->mType = mp_token_not;
          ++(*pc);
          if ('=' == **pc) {
             token->mType = mp_token_notequal;
             ++(*pc);
          }
-      }
-      else if ('^' == **pc) {
+         break;
+
+      case '^':
          token->mType = mp_token_bwxor;
          ++(*pc);
          if ('^' == **pc) {
             token->mType = mp_token_xor;
             ++(*pc);
          }
-      }
-      else if ('&' == **pc) {
+         break;
+
+      case '&':
          token->mType = mp_token_bwand;
          ++(*pc);
          if ('&' == **pc) {
             token->mType = mp_token_and;
             ++(*pc);
          }
-      }
-      else if ('|' == **pc) {
+         break;
+
+      case '|':
          token->mType = mp_token_bwor;
          ++(*pc);
          if ('|' == **pc) {
             token->mType = mp_token_or;
             ++(*pc);
          }
-      }
-      else if ('>' == **pc) {
+         break;
+
+      case '>':
          token->mType = mp_token_greater;
          ++(*pc);
          if ('=' == **pc) {
             token->mType = mp_token_greaterequal;
             ++(*pc);
          }
-      }
-      else if ('<' == **pc) {
+         break;
+
+      case '<':
          token->mType = mp_token_lesser;
          ++(*pc);
          if ('=' == **pc) {
             token->mType = mp_token_lesserequal;
             ++(*pc);
          }
+         break;
       }
 
       return rval; 
@@ -408,7 +430,7 @@ public:
       const unsigned int limit = MIN(MAX_TOKEN_SIZE, charsleft);
       //std::cout << "Chars Left = " << charsleft << std::endl;
       //std::cout << "Chars Limit = " << limit << std::endl;
-     
+
       while (('"' != **pc) && (current_char < limit)) {
          // If escaped 
          if ('\\' == **pc) {
