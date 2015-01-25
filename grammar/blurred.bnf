@@ -1,0 +1,30 @@
+# Blurred Programming Language Grammar (BNF)
+
+# Program structure
+> <program>
+<program> ::= <declaration-list>
+<declaration-list> ::= <declaration-list> <declaration> |
+                       <declaration>
+
+<declaration> := <data-declaration> |  
+                 <fun-declaration>
+
+# Data declarations
+# ----------------------------------------------------------------------------------------
+
+#Vars
+<data-declaration> ::= <data-declaration-init-list> | 
+                       <data-declaration-noinit-list> 
+
+<data-declaration-noinit-list> ::= <data-declaration-noinit-list> <data-declaration-noinit> ; |
+                                   <data-declaration-noinit> ;
+
+<data-declaration-init-list> ::= <data-declaration-init-list> <data-declaration-init> ; |
+                                 <data-declaration-init> ;
+
+<data-declaration-noinit> ::= <type> name |
+                              struct name { <data-declaration-noinit-list> }
+
+<data-declaration-init> ::= <type> name = <statement> 
+
+# Function declaration

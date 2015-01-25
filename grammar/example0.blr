@@ -1,0 +1,18 @@
+
+<fun-declaration> 
+<type> name ; 
+struct name { 
+   struct name { 
+      <type> name ;
+      <type> name ; 
+      <type> name ; 
+   } ;
+   struct name {
+      struct name { 
+         struct name {  
+            <type> name ;
+         } ;
+         <type> name ;
+      } ;
+   } ;
+  ;

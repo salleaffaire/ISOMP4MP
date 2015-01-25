@@ -7,7 +7,7 @@ var bit[n]  data0 = 32;
 
 // MP4 File
 struct mp4file {
-   list{payload};
+   list{payload} file;
 };
 
 struct payload {
