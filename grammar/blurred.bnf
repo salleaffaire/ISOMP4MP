@@ -2,6 +2,8 @@
 
 # Program structure
 > <program>
+/ ''
+
 <program> ::= <declaration-list>
 <declaration-list> ::= <declaration-list> <declaration> |
                        <declaration>
@@ -22,9 +24,40 @@
 <data-declaration-init-list> ::= <data-declaration-init-list> <data-declaration-init> ; |
                                  <data-declaration-init> ;
 
-<data-declaration-noinit> ::= <type> name |
+<data-declaration-noinit> ::= <type-specifier> name |
+                              <type-specifier> name if <expression> |
                               struct name { <data-declaration-noinit-list> }
 
-<data-declaration-init> ::= <type> name = <statement> 
+<data-declaration-init> ::= <type-specifier> name = <expression> 
+
+<type-specifier> ::= <base-type> <array-declaration> |
+                     <base-type>
+
+<array-declaration> ::= <array-declaration> [ <expression>] |
+                        [ <expression> ]
+
+<base-type> ::= bit |
+                list { <type-specifier> } |
+                void
+
+# Statements
+<statement> ::= <expression-statement> |   
+                <compound-statement> |
+                <if-statement> |
+                <return-statement> |
+                <for-statement> |
+                <while-statement> |
+                <return-statement> |
+                <break-statement>
+
+<expression-statement> ::= <expression> ; | ;
+
+<compound-statement> ::= { <statement-list> }
+
+<statement-list> ::= <statement-list> <statement> | ''
+
+<if-statement> ::= if ( <expression> ) <statement> |
+                   if ( <expression> ) <statement> else <statement>
+
 
 # Function declaration

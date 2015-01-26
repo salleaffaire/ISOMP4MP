@@ -1,0 +1,51 @@
+<fun-declaration> 
+
+list { bit } name if <expression> ; 
+
+void [ <expression> ] [ <expression> ] name if <expression> ; 
+
+list { bit } name if <expression> ; 
+
+list { list { void } [ <expression> ] } name ; 
+
+bit name = <expression> ; 
+
+list { list { list { void [ <expression> ] [ <expression> ] } } } name = <expression> ; 
+
+bit [ <expression> ] [ <expression> ] name = <expression> ; 
+
+list { list { void [ <expression> ] [ <expression> ] } } [ <expression> ] [ <expression> ] [ <expression> ] name = <return-statement> ;
+
+list { void [ <expression> ] [ <expression> ] [ <expression> ] [ <expression> ] } [ <expression> ] [ <expression> ] name = <for-statement> ; 
+
+bit name = <expression> ; 
+
+<fun-declaration> 
+
+struct name { 
+   struct name { 
+      struct name {
+         void name if <expression> ; 
+         list { void } [ <expression> ] [ <expression> ] [ <expression> ] name if <expression> ; 
+      } ;
+  
+      struct name { 
+         struct name { 
+            struct name { 
+               struct name { 
+                  list { list { void } } name ;
+               } ;
+               bit name if <expression> ; 
+               void name if <expression> ; 
+            } ; 
+            bit name if <expression> ; 
+         } ; 
+      } ; 
+   } ; 
+
+   struct name { 
+      struct name { 
+         void [ <expression> ] name ; 
+      } ; 
+   } ;
+} ;
