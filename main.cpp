@@ -5,7 +5,7 @@
 #include "bitextractor.hpp"
 
 #include "mp4parser.hpp"
-#include "mp_lexer.hpp"
+#include "blurred_lexer.hpp"
 
 
 int main(int argc, char *argv[]) {

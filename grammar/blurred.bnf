@@ -33,12 +33,22 @@
 <type-specifier> ::= <base-type> <array-declaration> |
                      <base-type>
 
-<array-declaration> ::= <array-declaration> [ <expression>] |
+<array-declaration> ::= <array-declaration> [ <expression> ] |
                         [ <expression> ]
 
 <base-type> ::= bit |
                 list { <type-specifier> } |
-                void
+                void |
+                name
+
+# Functions 
+<fun-declaration> ::= <type-specifier> name ( <params> ) { <statement> }
+
+<params> := <param-list> | ''
+
+<param-list> :: <param-list> , <param> | <param>
+
+<param> ::= <type-specifier> name
 
 # Statements
 <statement> ::= <expression-statement> |   
@@ -59,5 +69,35 @@
 <if-statement> ::= if ( <expression> ) <statement> |
                    if ( <expression> ) <statement> else <statement>
 
+<return-statement> ::= return ; |
+                       return <expression> ;
 
-# Function declaration
+<break-statement> ::= break ;
+
+<while-statement> ::= while ( <expression> ) statement |
+                      foreach ( <mutable> in name )
+
+# Expressions
+<expression> ::= <mutable> = <expression> |
+                 <simple-espression>
+
+<simple-expression> ::= <simple-expression> <bin-operator> <simple-expression> |
+                        <un-operator> <simple-expression> |
+                        <immutable>
+
+<immutable> ::= <call> |
+                ( <expression> ) |
+                <constant>
+
+<call> ::= name ( <args> )
+
+<args> ::= <arg-list> | ''
+
+<arg-list> ::= <arg-list> , <arg> | <arg>
+
+<arg> ::= <expression>
+
+<constant> ::= numeral | 
+               literal |
+               true |
+               false
