@@ -1,5 +1,5 @@
-#ifndef MPLEXER_HPP___
-#define MPLEXER_HPP___
+#ifndef BLURRED_LEXER_HPP___
+#define BLURRED_LEXER_HPP___
 
 #include <iostream>
 #include <fstream>
@@ -12,102 +12,103 @@
 
 #define MIN(X,Y) ((X < Y) ? (X) : (Y))
 
-enum MP_LEXER_STATE {
-   mp_l_ok     = 0x0000,
-   mp_l_uninit = 0x0001,
-   mp_l_error  = 0xF000
+enum BLR_LEXER_STATE {
+   blr_l_ok     = 0x0000,
+   blr_l_uninit = 0x0001,
+   blr_l_error  = 0xF000
 };
 
-enum MP_LEXER_ERROR {
-   mp_l_error_unknown = 0x0000,
-   mp_l_error_file    = 0x0001, // Input file can't be opened
-   mp_l_error_syntax  = 0x0002
+enum BLR_LEXER_ERROR {
+   blr_l_error_unknown = 0x0000,
+   blr_l_error_file    = 0x0001, // Input file can't be opened
+   blr_l_error_syntax  = 0x0002
 };
 
-enum MP_TOKEN_TYPE {
+enum BLR_TOKEN_TYPE {
    // General names
-   mp_token_name, 
+   blr_token_name, 
 
    // Reserved words
-   mp_token_while,
-   mp_token_if,
-   mp_token_break,
+   blr_token_while,
+   blr_token_if,
+   blr_token_break,
 
-   mp_token_var,
-   mp_token_struct,
-   mp_token_proc,
+   blr_token_var,
+   blr_token_struct,
+   blr_token_proc,
 
-   mp_token_bit,
-   mp_token_list,
-   mp_token_sizeof,
-   mp_token_in,
+   blr_token_bit,
+   blr_token_list,
+   blr_token_sizeof,
+   blr_token_in,
 
    // Operators
-   mp_token_slash,
-   mp_token_plus,
-   mp_token_minus,
-   mp_token_star,
-   mp_token_leftpar,
-   mp_token_rightpar,
-   mp_token_leftbrace,
-   mp_token_rightbrace,
-   mp_token_leftbracket,
-   mp_token_rightbracket,
-   mp_token_semicolon,
-   mp_token_dot,
-   mp_token_equal,
-   mp_token_notequal,
-   mp_token_greater,
-   mp_token_lesser,
-   mp_token_greaterequal,
-   mp_token_lesserequal,
-   mp_token_rightarrow,
-   mp_token_not,
-   mp_token_or,
-   mp_token_and,
-   mp_token_xor,
-   mp_token_bwnot,
-   mp_token_bwor,
-   mp_token_bwand,
-   mp_token_bwxor,
-   mp_token_leftshift,
-   mp_token_rightshift,
-   mp_token_assignment,
+   blr_token_slash,
+   blr_token_plus,
+   blr_token_minus,
+   blr_token_star,
+   blr_token_leftpar,
+   blr_token_rightpar,
+   blr_token_leftbrace,
+   blr_token_rightbrace,
+   blr_token_leftbracket,
+   blr_token_rightbracket,
+   blr_token_semicolon,
+   blr_token_dot,
+   blr_token_dotdot,
+   blr_token_equal,
+   blr_token_notequal,
+   blr_token_greater,
+   blr_token_lesser,
+   blr_token_greaterequal,
+   blr_token_lesserequal,
+   blr_token_rightarrow,
+   blr_token_not,
+   blr_token_or,
+   blr_token_and,
+   blr_token_xor,
+   blr_token_bwnot,
+   blr_token_bwor,
+   blr_token_bwand,
+   blr_token_bwxor,
+   blr_token_leftshift,
+   blr_token_rightshift,
+   blr_token_assignment,
    
    // Numerals
-   mp_token_numeral,
+   blr_token_numeral,
 
    // String Literals
-   mp_token_literal
+   blr_token_literal
 };
 
-struct mp_token {
-   MP_TOKEN_TYPE   mType;
+struct blr_token {
+   BLR_TOKEN_TYPE   mType;
    char            mValue[MAX_TOKEN_SIZE];
 };
 
 
-class mp_lexer {
+class blr_lexer {
 public:
-   explicit mp_lexer() :
+   explicit blr_lexer() :
       mPayload((char *)0), mPayloadSize(0),
-      mState(mp_l_uninit), mError(mp_l_error_unknown) {
+      mState(blr_l_uninit), mError(blr_l_error_unknown) {
       init();
    }
 
-   explicit mp_lexer(std::string filename) :
+   explicit blr_lexer(std::string filename) :
       mPayload((char *)0), mPayloadSize(0),
-      mState(mp_l_uninit), mError(mp_l_error_unknown) { 
+      mState(blr_l_uninit), mError(blr_l_error_unknown) { 
 
       // Read the file into memory
       // ------------------------------------------
       std::ifstream in(filename, std::ifstream::ate | std::ifstream::binary);
       if (in.fail()) {
-         mState = mp_l_error;
-         mError = mp_l_error_file;
+         mState = blr_l_error;
+         mError = blr_l_error_file;
       }
       else {
-         mState = mp_l_ok;
+         mState = blr_l_ok;
          
          mPayloadSize = in.tellg();
 
@@ -127,105 +128,106 @@ public:
       init();
    }
 
-   ~mp_lexer() {
+   ~blr_lexer() {
       if (mPayload) delete []mPayload;
    }
 
    bool init() {
       // Token names map
-      mTokenTypeNames[mp_token_name]          = "Name";
+      mTokenTypeNames[blr_token_name]          = "Name";
 
       // Reserved words
-      mTokenTypeNames[mp_token_while]         = "While";  
-      mTokenTypeNames[mp_token_break]         = "Break";  
-      mTokenTypeNames[mp_token_if]            = "If";  
-      mTokenTypeNames[mp_token_var]           = "Var";  
-      mTokenTypeNames[mp_token_proc]          = "Proc"; 
-      mTokenTypeNames[mp_token_struct]        = "Struct";       
-      mTokenTypeNames[mp_token_in]            = "In"; 
-      mTokenTypeNames[mp_token_sizeof]        = "Sizeof"; 
+      mTokenTypeNames[blr_token_while]         = "While";  
+      mTokenTypeNames[blr_token_break]         = "Break";  
+      mTokenTypeNames[blr_token_if]            = "If";  
+      mTokenTypeNames[blr_token_var]           = "Var";  
+      mTokenTypeNames[blr_token_proc]          = "Proc"; 
+      mTokenTypeNames[blr_token_struct]        = "Struct";       
+      mTokenTypeNames[blr_token_in]            = "In"; 
+      mTokenTypeNames[blr_token_sizeof]        = "Sizeof"; 
 
-      mTokenTypeNames[mp_token_list]          = "List";  
-      mTokenTypeNames[mp_token_bit]           = "Bit"; 
+      mTokenTypeNames[blr_token_list]          = "List";  
+      mTokenTypeNames[blr_token_bit]           = "Bit"; 
 
       // Operators
-      mTokenTypeNames[mp_token_slash]         = "Slash";  
-      mTokenTypeNames[mp_token_plus]          = "Plus";  
-      mTokenTypeNames[mp_token_minus]         = "Minus"; 
-      mTokenTypeNames[mp_token_star]          = "Star";  
-      mTokenTypeNames[mp_token_leftpar]       = "Left Parenthese";  
-      mTokenTypeNames[mp_token_rightpar]      = "Right Parenthese";  
-      mTokenTypeNames[mp_token_leftbrace]     = "Left Brace";  
-      mTokenTypeNames[mp_token_rightbrace]    = "Right Brace";  
-      mTokenTypeNames[mp_token_leftbracket]   = "Left Bracket";  
-      mTokenTypeNames[mp_token_rightbracket]  = "Right Bracket";  
-      mTokenTypeNames[mp_token_semicolon]     = "Semicolon";  
-      mTokenTypeNames[mp_token_dot]           = "Dot";  
-      mTokenTypeNames[mp_token_equal]         = "Equal";  
-      mTokenTypeNames[mp_token_notequal]      = "Not Equal";  
-      mTokenTypeNames[mp_token_greater]       = "Greater";  
-      mTokenTypeNames[mp_token_lesser]        = "Lesser";  
-      mTokenTypeNames[mp_token_greaterequal]  = "Greater or Equal";  
-      mTokenTypeNames[mp_token_lesserequal]   = "Lesser or Equal";
-      mTokenTypeNames[mp_token_rightarrow]    = "Right Arrow";  
-      mTokenTypeNames[mp_token_not]           = "Not";  
-      mTokenTypeNames[mp_token_or]            = "Or";  
-      mTokenTypeNames[mp_token_and]           = "And";  
-      mTokenTypeNames[mp_token_xor]           = "Xor";  
-      mTokenTypeNames[mp_token_bwnot]         = "Bitwise Not";  
-      mTokenTypeNames[mp_token_bwor]          = "Bitwise Or";  
-      mTokenTypeNames[mp_token_bwand]         = "Bitwise And";  
-      mTokenTypeNames[mp_token_bwxor]         = "Bitwise Xor";  
-      mTokenTypeNames[mp_token_leftshift]     = "Left Shift";  
-      mTokenTypeNames[mp_token_rightshift]    = "Right Shift";  
-      mTokenTypeNames[mp_token_assignment]    = "Assignment";
+      mTokenTypeNames[blr_token_slash]         = "Slash";  
+      mTokenTypeNames[blr_token_plus]          = "Plus";  
+      mTokenTypeNames[blr_token_minus]         = "Minus"; 
+      mTokenTypeNames[blr_token_star]          = "Star";  
+      mTokenTypeNames[blr_token_leftpar]       = "Left Parenthese";  
+      mTokenTypeNames[blr_token_rightpar]      = "Right Parenthese";  
+      mTokenTypeNames[blr_token_leftbrace]     = "Left Brace";  
+      mTokenTypeNames[blr_token_rightbrace]    = "Right Brace";  
+      mTokenTypeNames[blr_token_leftbracket]   = "Left Bracket";  
+      mTokenTypeNames[blr_token_rightbracket]  = "Right Bracket";  
+      mTokenTypeNames[blr_token_semicolon]     = "Semicolon";  
+      mTokenTypeNames[blr_token_dot]           = "Dot";  
+      mTokenTypeNames[blr_token_dotdot]        = "Dot Dot";  
+      mTokenTypeNames[blr_token_equal]         = "Equal";  
+      mTokenTypeNames[blr_token_notequal]      = "Not Equal";  
+      mTokenTypeNames[blr_token_greater]       = "Greater";  
+      mTokenTypeNames[blr_token_lesser]        = "Lesser";  
+      mTokenTypeNames[blr_token_greaterequal]  = "Greater or Equal";  
+      mTokenTypeNames[blr_token_lesserequal]   = "Lesser or Equal";
+      mTokenTypeNames[blr_token_rightarrow]    = "Right Arrow";  
+      mTokenTypeNames[blr_token_not]           = "Not";  
+      mTokenTypeNames[blr_token_or]            = "Or";  
+      mTokenTypeNames[blr_token_and]           = "And";  
+      mTokenTypeNames[blr_token_xor]           = "Xor";  
+      mTokenTypeNames[blr_token_bwnot]         = "Bitwise Not";  
+      mTokenTypeNames[blr_token_bwor]          = "Bitwise Or";  
+      mTokenTypeNames[blr_token_bwand]         = "Bitwise And";  
+      mTokenTypeNames[blr_token_bwxor]         = "Bitwise Xor";  
+      mTokenTypeNames[blr_token_leftshift]     = "Left Shift";  
+      mTokenTypeNames[blr_token_rightshift]    = "Right Shift";  
+      mTokenTypeNames[blr_token_assignment]    = "Assignment";
 
       // Constant - Numerals
-      mTokenTypeNames[mp_token_numeral]       = "Numeral";  
+      mTokenTypeNames[blr_token_numeral]       = "Numeral";  
 
       // String literals
-      mTokenTypeNames[mp_token_literal]       = "String Literal";  
+      mTokenTypeNames[blr_token_literal]       = "String Literal";  
 
       // Reserved words map
-      mReservedWords["while"]  = mp_token_while;
-      mReservedWords["break"]  = mp_token_break;
-      mReservedWords["if"]     = mp_token_if;     
-      mReservedWords["var"]    = mp_token_var;
-      mReservedWords["proc"]   = mp_token_proc;
-      mReservedWords["struct"] = mp_token_struct;
-      mReservedWords["in"]     = mp_token_in;
-      mReservedWords["sizeof"] = mp_token_sizeof;
-      mReservedWords["bit"]    = mp_token_bit;
-      mReservedWords["list"]   = mp_token_list;
+      mReservedWords["while"]  = blr_token_while;
+      mReservedWords["break"]  = blr_token_break;
+      mReservedWords["if"]     = blr_token_if;     
+      mReservedWords["var"]    = blr_token_var;
+      mReservedWords["proc"]   = blr_token_proc;
+      mReservedWords["struct"] = blr_token_struct;
+      mReservedWords["in"]     = blr_token_in;
+      mReservedWords["sizeof"] = blr_token_sizeof;
+      mReservedWords["bit"]    = blr_token_bit;
+      mReservedWords["list"]   = blr_token_list;
 
       // Error message map
-      mErrorMessages[mp_l_error_syntax] = "Syntax";
+      mErrorMessages[blr_l_error_syntax] = "Syntax";
    }
 
-   bool mp_isalpha(const char c) {
+   bool blr_isalpha(const char c) {
       return (c >= 'a' && c <= 'z') ||
          (c >= 'A' && c <= 'Z') ||
          (c == '_');
    }
 
-   bool mp_isdecdigit(const char c) {
+   bool blr_isdecdigit(const char c) {
       return (c >= '0' && c <= '9');
    }
 
-   bool mp_ishexdigit(const char c) {
-      return mp_isdecdigit(c) || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
+   bool blr_ishexdigit(const char c) {
+      return blr_isdecdigit(c) || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
    }
 
-   bool mp_readdecnumber(char **pc, mp_token *token) {
+   bool blr_readdecnumber(char **pc, blr_token *token) {
       bool rval = true;
 
       // Token name is set to name - will be changed to reserved if part of the 
       // reserved words
-      token->mType = mp_token_numeral;
+      token->mType = blr_token_numeral;
 
       unsigned int current_char = 0;
 
-      while ((mp_isdecdigit(**pc) || ('.' == **pc)) && (current_char < MAX_TOKEN_SIZE)) {
+      while ((blr_isdecdigit(**pc) || ('.' == **pc)) && (current_char < MAX_TOKEN_SIZE)) {
          token->mValue[current_char] = **pc;
          ++current_char;
          ++(*pc);
@@ -234,19 +236,19 @@ public:
       return rval;
    }
 
-   bool mp_readalpha(char **pc, mp_token *token) {
+   bool blr_readalpha(char **pc, blr_token *token) {
       bool rval = true;
 
       // Token name is set to name - will be changed to reserved if part of the 
       // reserved words
-      token->mType = mp_token_name;
+      token->mType = blr_token_name;
       
       // Store first caracter
       unsigned int current_char = 1;
       token->mValue[0] = **pc;
       ++(*pc);
 
-      while ((mp_isalpha(**pc) || mp_isdecdigit(**pc)) && (current_char < MAX_TOKEN_SIZE)) {
+      while ((blr_isalpha(**pc) || blr_isdecdigit(**pc)) && (current_char < MAX_TOKEN_SIZE)) {
          token->mValue[current_char] = **pc;
          ++current_char;
          ++(*pc);
@@ -262,7 +264,7 @@ public:
       return rval;
    }
 
-   bool mp_readcomment_line(char **pc) {
+   bool blr_readcomment_line(char **pc) {
       bool rval = true;
       
       // Skip the double slash '//'
@@ -276,138 +278,142 @@ public:
       return rval;
    }
 
-   bool mp_readoperator(char **pc, mp_token *token) {
+   bool blr_readoperator(char **pc, blr_token *token) {
       bool rval = true;      
       
       switch (**pc) {
       case '/':
-         token->mType = mp_token_slash;
+         token->mType = blr_token_slash;
          ++(*pc);
          break;
  
       case '-':
-         token->mType = mp_token_minus;
+         token->mType = blr_token_minus;
          ++(*pc);         
          if ('>' == **pc) {
-            token->mType = mp_token_rightarrow;
+            token->mType = blr_token_rightarrow;
             ++(*pc);
          }
          break;
       
       case '+':
-         token->mType = mp_token_plus;
+         token->mType = blr_token_plus;
          ++(*pc);
          break;
 
       case '*':
-         token->mType = mp_token_star;
+         token->mType = blr_token_star;
          ++(*pc);         
          break;
 
       case '(':
-         token->mType = mp_token_leftpar;
+         token->mType = blr_token_leftpar;
          ++(*pc);
          break;
 
       case ')':
-         token->mType = mp_token_rightpar;
+         token->mType = blr_token_rightpar;
          ++(*pc);
          break;
 
       case '{':
-         token->mType = mp_token_leftbrace;
+         token->mType = blr_token_leftbrace;
          ++(*pc);
          break;
 
       case '}':
-         token->mType = mp_token_rightbrace;
+         token->mType = blr_token_rightbrace;
          ++(*pc);
          break;
 
       case '[':
-         token->mType = mp_token_leftbracket;
+         token->mType = blr_token_leftbracket;
          ++(*pc);
          break;
 
       case ']':
-         token->mType = mp_token_rightbracket;
+         token->mType = blr_token_rightbracket;
          ++(*pc);
          break;
 
       case ';':
-         token->mType = mp_token_semicolon;
+         token->mType = blr_token_semicolon;
          ++(*pc);
          break;
 
       case '.':
-         token->mType = mp_token_dot;
+         token->mType = blr_token_dot;
          ++(*pc);
+         if ('.' == **pc) {
+            token->mType = blr_token_dotdot;
+            ++(*pc);
+         } 
          break;
 
       case '~':
-         token->mType = mp_token_bwnot;
+         token->mType = blr_token_bwnot;
          ++(*pc);
          break;
 
       case '=':
-         token->mType = mp_token_assignment;
+         token->mType = blr_token_assignment;
          ++(*pc);
          if ('=' == **pc) {
-            token->mType = mp_token_equal;
+            token->mType = blr_token_equal;
             ++(*pc);
          }
          break;
 
       case '!':
-         token->mType = mp_token_not;
+         token->mType = blr_token_not;
          ++(*pc);
          if ('=' == **pc) {
-            token->mType = mp_token_notequal;
+            token->mType = blr_token_notequal;
             ++(*pc);
          }
          break;
 
       case '^':
-         token->mType = mp_token_bwxor;
+         token->mType = blr_token_bwxor;
          ++(*pc);
          if ('^' == **pc) {
-            token->mType = mp_token_xor;
+            token->mType = blr_token_xor;
             ++(*pc);
          }
          break;
 
       case '&':
-         token->mType = mp_token_bwand;
+         token->mType = blr_token_bwand;
          ++(*pc);
          if ('&' == **pc) {
-            token->mType = mp_token_and;
+            token->mType = blr_token_and;
             ++(*pc);
          }
          break;
 
       case '|':
-         token->mType = mp_token_bwor;
+         token->mType = blr_token_bwor;
          ++(*pc);
          if ('|' == **pc) {
-            token->mType = mp_token_or;
+            token->mType = blr_token_or;
             ++(*pc);
          }
          break;
 
       case '>':
-         token->mType = mp_token_greater;
+         token->mType = blr_token_greater;
          ++(*pc);
          if ('=' == **pc) {
-            token->mType = mp_token_greaterequal;
+            token->mType = blr_token_greaterequal;
             ++(*pc);
          }
          break;
 
       case '<':
-         token->mType = mp_token_lesser;
+         token->mType = blr_token_lesser;
          ++(*pc);
          if ('=' == **pc) {
-            token->mType = mp_token_lesserequal;
+            token->mType = blr_token_lesserequal;
             ++(*pc);
          }
          break;
@@ -416,12 +422,12 @@ public:
       return rval; 
    }
 
-   bool mp_readliteral(char **pc, mp_token *token, unsigned int charsleft) {
+   bool blr_readliteral(char **pc, blr_token *token, unsigned int charsleft) {
       bool rval = true;
       
       // Token name is set to name - will be changed to reserved if part of the 
       // reserved words
-      token->mType = mp_token_literal;
+      token->mType = blr_token_literal;
       
       // Skip first caracter " 
       unsigned int current_char = 0;
@@ -460,8 +466,8 @@ public:
       }
 
       if ('"' != **pc) {
-         mState = mp_l_error;
-         mError = mp_l_error_syntax;
+         mState = blr_l_error;
+         mError = blr_l_error_syntax;
          rval = false;
       }
       else {
@@ -474,26 +480,26 @@ public:
    }
 
    bool run() {
-      if (mp_l_ok == mState) {
+      if (blr_l_ok == mState) {
 
          char *pc = mPayload;
          const char *pe = mPayload + mPayloadSize;
 
          bool need_new_token = true;
-         mp_token *current_token;
+         blr_token *current_token;
 
          while (pc < pe) {
             std::cout << *pc;
             if (need_new_token) {
-               current_token = new mp_token;
+               current_token = new blr_token;
                current_token->mValue[0] = 0x00;
                need_new_token = false;
             }
 
             // If a name
-            if (mp_isalpha(*pc)) {
-               if (mp_readalpha(&pc, current_token)) {
-                  mTokenList.push_back(std::shared_ptr<mp_token>(current_token));
+            if (blr_isalpha(*pc)) {
+               if (blr_readalpha(&pc, current_token)) {
+                  mTokenList.push_back(std::shared_ptr<blr_token>(current_token));
                   need_new_token = true;
                }
             }
@@ -501,11 +507,11 @@ public:
             else if (*pc == '/') {
                // Peek ahead -  
                if (*(pc+1) == '/') {
-                  mp_readcomment_line(&pc);
+                  blr_readcomment_line(&pc);
                }
                else {
-                  if (mp_readoperator(&pc, current_token)) {
-                     mTokenList.push_back(std::shared_ptr<mp_token>(current_token));
+                  if (blr_readoperator(&pc, current_token)) {
+                     mTokenList.push_back(std::shared_ptr<blr_token>(current_token));
                      need_new_token = true;
                   }       
                }
@@ -517,15 +523,15 @@ public:
                      (*pc == ';') || (*pc == '.') || (*pc == '<') ||
                      (*pc == '>') || (*pc == '=') || (*pc == '!') ||
                      (*pc == '^') || (*pc == '&') || (*pc == '|')) {
-               if (mp_readoperator(&pc, current_token)) {
-                  mTokenList.push_back(std::shared_ptr<mp_token>(current_token));
+               if (blr_readoperator(&pc, current_token)) {
+                  mTokenList.push_back(std::shared_ptr<blr_token>(current_token));
                   need_new_token = true;
                }
             }
             // If a string literal
             else if (*pc == '"') {
-               if (mp_readliteral(&pc, current_token, pe-pc)) {
-                  mTokenList.push_back(std::shared_ptr<mp_token>(current_token));
+               if (blr_readliteral(&pc, current_token, pe-pc)) {
+                  mTokenList.push_back(std::shared_ptr<blr_token>(current_token));
                   need_new_token = true;
                }
                else {
@@ -533,13 +539,13 @@ public:
                }
             }
             // If a number
-            else if (mp_isdecdigit(*pc)) {
+            else if (blr_isdecdigit(*pc)) {
                if (('0' == *pc) && (('x' == *(pc+1)) || ('X' == *(pc+1)))) {
                   // TODO HEX
                } 
                else {
-                  if (mp_readdecnumber(&pc, current_token)) {
-                     mTokenList.push_back(std::shared_ptr<mp_token>(current_token));
+                  if (blr_readdecnumber(&pc, current_token)) {
+                     mTokenList.push_back(std::shared_ptr<blr_token>(current_token));
                      need_new_token = true;
                   }
                   else {
@@ -567,20 +573,24 @@ public:
          std::cout << mTokenTypeNames[a->mType] << " : " << a->mValue << std::endl; 
       }
    }
+
+   std::list<std::shared_ptr<blr_token>> *get_token_list_pointer() {
+      return &mTokenList;
+   }
    
 private:
    char        *mPayload;
    unsigned int mPayloadSize;
 
-   MP_LEXER_STATE mState;
-   MP_LEXER_ERROR mError;
+   BLR_LEXER_STATE mState;
+   BLR_LEXER_ERROR mError;
 
-   std::list<std::shared_ptr<mp_token>> mTokenList;
-   std::map<std::string, MP_TOKEN_TYPE> mReservedWords;
-   std::map<MP_LEXER_ERROR, std::string> mErrorMessages;
+   std::list<std::shared_ptr<blr_token>>  mTokenList;
+   std::map<std::string, BLR_TOKEN_TYPE>  mReservedWords;
+   std::map<BLR_LEXER_ERROR, std::string> mErrorMessages;
 
    // This is mostly used for debugging
-   std::map<MP_TOKEN_TYPE, std::string> mTokenTypeNames;
+   std::map<BLR_TOKEN_TYPE, std::string> mTokenTypeNames;
 
    bool err() {
       std::cout << std::endl;

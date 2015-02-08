@@ -142,22 +142,22 @@ public:
    mp4parser() {
       bit_structure *bs = new bit_structure(); 
 
-      bs->add_node(bit_structure_node{bsn_comp, "version",              1, 1, 9}); //0
-      bs->add_node(bit_structure_node{bsn_pop,  "creation_time_l",     32, 0, 0}); //1 
-      bs->add_node(bit_structure_node{bsn_pop,  "creation_time_h",     32, 0, 0}); //2
-      bs->add_node(bit_structure_node{bsn_pop,  "moficication_time_l", 32, 0, 0}); //3
-      bs->add_node(bit_structure_node{bsn_pop,  "moficication_time_h", 32, 0, 0}); //4
-      bs->add_node(bit_structure_node{bsn_pop,  "time_scale",          32, 0, 0}); //5
-      bs->add_node(bit_structure_node{bsn_pop,  "duration_l",          32, 0, 0}); //6
-      bs->add_node(bit_structure_node{bsn_pop,  "duration_h",          32, 0, 0}); //7
-      bs->add_node(bit_structure_node{bsn_jump, "",                    13, 0, 0}); //8
-      bs->add_node(bit_structure_node{bsn_pop,  "creation_time",       32, 0, 0}); //9
-      bs->add_node(bit_structure_node{bsn_pop,  "moficication_time",   32, 0, 0}); //10
-      bs->add_node(bit_structure_node{bsn_pop,  "time_scale",          32, 0, 0}); //11
-      bs->add_node(bit_structure_node{bsn_pop,  "duration",            32, 0, 0}); //12
-      bs->add_node(bit_structure_node{bsn_pop,  "pad_language",        16, 0, 0}); //13
-      bs->add_node(bit_structure_node{bsn_pop,  "predefined",          16, 0, 0}); //14
-      bs->add_node(bit_structure_node{bsn_end,  "",                     0, 0, 0}); //15
+      bs->add_node(new bit_structure_node{bsn_comp, "version",              1, 1, 9}); //0
+      bs->add_node(new bit_structure_node{bsn_pop,  "creation_time_l",     32, 0, 0}); //1 
+      bs->add_node(new bit_structure_node{bsn_pop,  "creation_time_h",     32, 0, 0}); //2
+      bs->add_node(new bit_structure_node{bsn_pop,  "moficication_time_l", 32, 0, 0}); //3
+      bs->add_node(new bit_structure_node{bsn_pop,  "moficication_time_h", 32, 0, 0}); //4
+      bs->add_node(new bit_structure_node{bsn_pop,  "time_scale",          32, 0, 0}); //5
+      bs->add_node(new bit_structure_node{bsn_pop,  "duration_l",          32, 0, 0}); //6
+      bs->add_node(new bit_structure_node{bsn_pop,  "duration_h",          32, 0, 0}); //7
+      bs->add_node(new bit_structure_node{bsn_jump, "",                    13, 0, 0}); //8
+      bs->add_node(new bit_structure_node{bsn_pop,  "creation_time",       32, 0, 0}); //9
+      bs->add_node(new bit_structure_node{bsn_pop,  "moficication_time",   32, 0, 0}); //10
+      bs->add_node(new bit_structure_node{bsn_pop,  "time_scale",          32, 0, 0}); //11
+      bs->add_node(new bit_structure_node{bsn_pop,  "duration",            32, 0, 0}); //12
+      bs->add_node(new bit_structure_node{bsn_pop,  "pad_language",        16, 0, 0}); //13
+      bs->add_node(new bit_structure_node{bsn_pop,  "predefined",          16, 0, 0}); //14
+      bs->add_node(new bit_structure_node{bsn_end,  "",                     0, 0, 0}); //15
       
       mParsingAlgos["mdhd"] = std::shared_ptr<bit_structure>(bs);
    }

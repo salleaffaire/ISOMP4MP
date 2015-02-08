@@ -1,14 +1,49 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 
 #include "bitextractor.hpp"
 
 #include "mp4parser.hpp"
-#include "blurred_lexer.hpp"
 
+// TEST CLASSES
+// ---------------------------------
+class ATOM {
+public:
+   ATOM() {
+      std::cout << "ATOM C" << std::endl;
+   }
+   ATOM(const ATOM &x) {
+      std::cout << "ATOM CC" << std::endl;
+   }
+   ~ATOM() {
+      std::cout << "ATOM D" << std::endl;
+   }
+};
+
+class TEST {
+public:
+   TEST() {
+      mV.reserve(32);
+   }
+   void add(ATOM &&x) {
+      mV.emplace_back(std::move<ATOM&>(x));
+   }
+   std::vector<ATOM> mV;
+};
+// ------------------------------------
 
 int main(int argc, char *argv[]) {
+
+   // TESTS
+   // -----------------------------------
+   #if 0
+   TEST t;
+   
+   t.add(ATOM());
+   #endif
+
    std::string filename = "sample_mpeg4.mp4"; 
 
    // Read the file into memory
@@ -44,14 +79,6 @@ int main(int argc, char *argv[]) {
    std::cout << bit_code{code3, 5} << std::endl;
    std::cout << bit_code{code4, 5} << std::endl;
    std::cout << bit_code{code5, 6} << std::endl;  
-   #endif
-
-   #if 1
-   // Test MP Lexer
-   mp_lexer lexer("tests/mp_test1.mpl");
-   lexer.run();
-
-   lexer.output_token_list();
    #endif
 
    #if 0

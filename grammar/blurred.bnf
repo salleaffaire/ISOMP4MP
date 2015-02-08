@@ -8,6 +8,7 @@
 <declaration-list> ::= <declaration-list> <declaration> |
                        <declaration>
 
+
 <declaration> := <data-declaration> |  
                  <fun-declaration>
 
@@ -33,8 +34,8 @@
 <type-specifier> ::= <base-type> <array-declaration> |
                      <base-type>
 
-<array-declaration> ::= <array-declaration> [ <expression> ] |
-                        [ <expression> ]
+<array-declaration> ::= <array-declaration> [ numeral ] |
+                        [ numeral ]
 
 <base-type> ::= bit |
                 list { <type-specifier> } |
@@ -81,13 +82,16 @@
 <expression> ::= <mutable> = <expression> |
                  <simple-espression>
 
-<simple-expression> ::= <simple-expression> <bin-operator> <simple-expression> |
-                        <un-operator> <simple-expression> |
-                        <immutable>
+<simple-expression> ::= <simple-expression> <bin-operator-1> <simple-term> |
+                        <simple-term>
 
-<immutable> ::= <call> |
-                ( <expression> ) |
-                <constant>
+<simple-term> ::=  <simple-term> <bin-operator-2> <factor> |
+                   <factor>
+
+<factor> := ( <simple-expression> ) |
+             <un-operator> |
+             <constant> |
+             <call>
 
 <call> ::= name ( <args> )
 
@@ -101,3 +105,4 @@
                literal |
                true |
                false
+

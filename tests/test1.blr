@@ -3,7 +3,7 @@
 
 // bit[] type
 var bit[32] n     = 24;
-var bit[n]  data0 = 32;
+bit[n]  data0 = 32;
 
 // MP4 File
 struct mp4file {
@@ -19,5 +19,5 @@ struct payload {
    bit[(size-sizeof(name)-sizeof(size)-sizeof(version))*8] data; 
 };
 
-var list{bit[32]} fullatomname = {00000000, 11111111};
+list{bit[32]} fullatomname = {00000000, 11111111};
 

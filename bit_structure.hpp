@@ -18,10 +18,38 @@ enum BSN_TYPE {
 
 class bit_structure_node {
 public:
+   bit_structure_node(BSN_TYPE type, std::string name, 
+                      unsigned int value0, 
+                      unsigned int value1,
+                      unsigned int value2) : 
+      mType(type),
+      mName(name),
+      mValues {value0, value1, value2} 
+   {
+      std::cout << " BSN C" << std::endl;
+   }
+
+   bit_structure_node(const bit_structure_node &x) :
+      mType(x.mType),
+      mName(x.mName),
+      mValues {x.mValues[0], x.mValues[1], x.mValues[2]} 
+   {
+      std::cout << " BSN CC" << std::endl;
+   }
+
+   bit_structure_node(bit_structure_node &&x) :
+      mType(x.mType),
+      mName(x.mName),
+      mValues {x.mValues[0], x.mValues[1], x.mValues[2]} 
+   {
+      std::cout << " BSN CC R" << std::endl;
+   }
 
    ~bit_structure_node() {
-      //std::cout << " BSN D" << std::endl;
+      std::cout << " BSN D" << std::endl;
    }
+
+   
 
    BSN_TYPE     mType;   
    std::string  mName;
@@ -32,30 +60,31 @@ class bit_structure {
 public:
    bit_structure() {
       mBSNVector.reserve(32);
-      //std::cout << " BS C" << std::endl;
+      std::cout << " BS C" << std::endl;
    }
    ~bit_structure() {
-      //std::cout << " BS D" << std::endl;
+      std::cout << " BS D" << std::endl;
    }
    bit_structure(const bit_structure &bsn) {
-      //std::cout << " BS CC" << std::endl;
+      std::cout << " BS CC" << std::endl;
    }
    bit_structure &operator=(const bit_structure &bsn) {
-      //std::cout << " BS CC" << std::endl;
+      std::cout << " BS CC" << std::endl;
       return *this;
    }
 
-   void add_node(bit_structure_node &&bsn) {
-      mBSNVector.emplace_back(bsn);
+   void add_node(bit_structure_node *bsn) {
+      std::cout << "R add_node" << std::endl;
+      mBSNVector.emplace_back(std::shared_ptr<bit_structure_node>(bsn));
    }
 
    bit_structure_node &operator[](unsigned int index) {
-      return mBSNVector[index];
+      return *(mBSNVector[index]);
    }
 
    
 private:
-   std::vector<bit_structure_node> mBSNVector;
+   std::vector<std::shared_ptr<bit_structure_node>> mBSNVector;
 };
 
 class bit_structure_parser {
